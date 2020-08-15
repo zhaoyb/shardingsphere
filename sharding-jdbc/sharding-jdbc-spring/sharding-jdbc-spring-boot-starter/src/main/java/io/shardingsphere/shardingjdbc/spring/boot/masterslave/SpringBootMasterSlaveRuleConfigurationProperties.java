@@ -23,6 +23,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Master-slave rule configuration properties.
  *
+ * 主从 配置类   spring boot 包装类
+ *
  * @author caohao
  */
 @ConfigurationProperties(prefix = "sharding.jdbc.config.masterslave")

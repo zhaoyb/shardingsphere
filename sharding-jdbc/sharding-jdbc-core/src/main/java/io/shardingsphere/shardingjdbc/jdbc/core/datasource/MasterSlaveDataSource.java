@@ -24,9 +24,6 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import lombok.Getter;
-
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,6 +31,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import javax.sql.DataSource;
+import lombok.Getter;
 
 /**
  * Database that support master-slave.
@@ -43,13 +42,13 @@ import java.util.Properties;
  */
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
-    
+
     private final Map<String, DataSource> dataSourceMap;
-    
+
     private final MasterSlaveRule masterSlaveRule;
-    
+
     private final ShardingProperties shardingProperties;
-    
+
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRuleConfig.getMasterDataSourceName(), masterSlaveRuleConfig.getSlaveDataSourceNames()));
@@ -60,7 +59,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
-    
+
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
                                  final Map<String, Object> configMap, final ShardingProperties props) throws SQLException {
         super(getAllDataSources(dataSourceMap, masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames()));
@@ -71,18 +70,22 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         this.masterSlaveRule = masterSlaveRule;
         this.shardingProperties = props;
     }
-    
+
     private static Collection<DataSource> getAllDataSources(final Map<String, DataSource> dataSourceMap, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
         Collection<DataSource> result = new LinkedList<>();
+        // master
         result.add(dataSourceMap.get(masterDataSourceName));
+        // slaves
         for (String each : slaveDataSourceNames) {
             result.add(dataSourceMap.get(each));
         }
         return result;
     }
-    
+
     /**
      * Get map of all actual data source name and all actual data sources.
+     *
+     * 获取所有的原始Datasource
      *
      * @return map of all actual data source name and all actual data sources
      */
@@ -94,7 +97,10 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
         }
         return result;
     }
-    
+
+    /**
+     * 关闭数据库连接
+     */
     private void closeOriginalDataSources() {
         for (DataSource each : getDataSourceMap().values()) {
             try {
@@ -104,17 +110,23 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter implements 
             }
         }
     }
-    
+
+    /**
+     * 获取连接
+     */
     @Override
     public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(this);
     }
-    
+
+    /**
+     * 关闭连接
+     */
     @Override
     public final void close() {
         closeOriginalDataSources();
     }
-    
+
     /**
      * Show SQL or not.
      *

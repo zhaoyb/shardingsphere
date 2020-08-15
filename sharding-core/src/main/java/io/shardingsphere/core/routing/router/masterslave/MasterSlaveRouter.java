@@ -44,23 +44,30 @@ public final class MasterSlaveRouter {
     /**
      * Route Master slave.
      *
+     * 根据sql 路由 master  slave
+     *
      * @param sql SQL
      * @return data source names
      */
     // TODO for multiple masters may return more than one data source
     public Collection<String> route(final String sql) {
+        // 解析 sql ， 获取sql的类型， 是增删改   还是查询
         Collection<String> result = route(new SQLJudgeEngine(sql).judge().getType());
+        // 打印sql
         if (showSQL) {
             SQLLogger.logSQL(sql, result);
         }
+        // 返回数据源名称
         return result;
     }
     
     private Collection<String> route(final SQLType sqlType) {
+        // master
         if (isMasterRoute(sqlType)) {
             MasterVisitedManager.setMasterVisited();
             return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
         }
+        // 否则根据负载算法， 返回一个slave
         return Collections.singletonList(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
     }

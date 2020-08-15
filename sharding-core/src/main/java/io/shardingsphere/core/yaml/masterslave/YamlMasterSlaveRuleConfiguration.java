@@ -35,6 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Master-slave rule configuration for yaml.
  *
+ * 主从配置类
+ *
  * @author caohao
  * @author panjuan
  */

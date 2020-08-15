@@ -50,6 +50,8 @@ public abstract class WrapperAdapter implements Wrapper {
     
     /**
      * record method invocation.
+     *
+     * 记录要调用的方法及参数
      * 
      * @param targetClass target class
      * @param methodName method name

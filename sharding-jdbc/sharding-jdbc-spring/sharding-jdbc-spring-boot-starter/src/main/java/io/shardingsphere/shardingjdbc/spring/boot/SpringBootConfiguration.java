@@ -56,6 +56,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     /**
      * Get data source bean.
+     *
+     * 创建dataSrouce
      * 
      * @return data source bean
      * @throws SQLException SQL exception
@@ -67,7 +69,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
                 : MasterSlaveDataSourceFactory.createDataSource(
                         dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), masterSlaveProperties.getConfigMap(), masterSlaveProperties.getProps());
     }
-    
+
+    /**
+     *
+     * spring回调方法，注入环境信息
+     *
+     * @param environment
+     */
     @Override
     public final void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);
@@ -76,12 +84,16 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @SuppressWarnings("unchecked")
     private void setDataSourceMap(final Environment environment) {
         String prefix = "sharding.jdbc.datasource.";
+        // 数据源 可以有多个
         String dataSources = environment.getProperty(prefix + "names");
         for (String each : dataSources.split(",")) {
             try {
+                // 指定数据源的配置信息
                 Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + each, Map.class);
                 Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
+                // 创建数据源
                 DataSource dataSource = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+                // 放入到集合
                 dataSourceMap.put(each, dataSource);
             } catch (final ReflectiveOperationException ex) {
                 throw new ShardingException("Can't find datasource type!", ex);

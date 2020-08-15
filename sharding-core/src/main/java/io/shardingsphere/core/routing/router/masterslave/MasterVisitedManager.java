@@ -36,6 +36,7 @@ public final class MasterVisitedManager {
     
     /**
      * Adjust master data source visited in current thread.
+     * 在当前线程  强制指定访问master
      * 
      * @return master data source visited or not in current thread
      */

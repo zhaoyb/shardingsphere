@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Round-robin slave database load-balance algorithm.
  *
+ *  如果有多个从库， 从库轮询负载
+ *
  * @author zhangliang
  */
 public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {

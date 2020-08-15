@@ -95,6 +95,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        // 获取对应的datasource
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -102,17 +103,22 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             connections = cachedConnections.get(dataSourceName);
         }
         List<Connection> result;
+        // 已有的连接数量 满足 请求的 连接数量
         if (connections.size() >= connectionSize) {
             result = new ArrayList<>(connections).subList(0, connectionSize);
         } else if (!connections.isEmpty()) {
+            // 已有的连接数量 不满足 请求的 连接数量，  需要 新建连接
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
+            // 新建连接
             List<Connection> newConnections = createConnections(connectionMode, dataSource, connectionSize - connections.size());
             result.addAll(newConnections);
+            // 放入到本地缓存
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
+            // 本地缓存是空的， 新建连接
             result = new ArrayList<>(createConnections(connectionMode, dataSource, connectionSize));
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
@@ -143,6 +149,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final DataSource dataSource) throws SQLException {
+        // 根据datasource 获取连接
         Connection result = dataSource.getConnection();
         replayMethodsInvocation(result);
         return result;

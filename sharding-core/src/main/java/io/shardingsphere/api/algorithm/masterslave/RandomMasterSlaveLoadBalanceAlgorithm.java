@@ -23,6 +23,8 @@ import java.util.Random;
 /**
  * Random slave database load-balance algorithm.
  *
+ * 如果有多个从库， 从库随机负载
+ *
  * @author zhangliang
  */
 public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {

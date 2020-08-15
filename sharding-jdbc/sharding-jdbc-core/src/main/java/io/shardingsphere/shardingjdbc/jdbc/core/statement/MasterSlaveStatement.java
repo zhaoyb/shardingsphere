@@ -68,7 +68,14 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
     }
-    
+
+    /**
+     *  执行查询
+     *
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         clearPrevious();

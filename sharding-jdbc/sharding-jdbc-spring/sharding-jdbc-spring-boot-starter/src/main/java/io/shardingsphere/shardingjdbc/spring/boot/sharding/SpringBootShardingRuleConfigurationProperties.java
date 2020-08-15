@@ -23,6 +23,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Sharding rule configuration properties.
  *
+ *  分片配置类   spring boot 包装类
+ *
  * @author caohao
  */
 @ConfigurationProperties(prefix = "sharding.jdbc.config.sharding")

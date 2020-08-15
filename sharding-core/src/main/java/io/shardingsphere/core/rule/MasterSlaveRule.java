@@ -27,6 +27,8 @@ import java.util.Collection;
 
 /**
  * Databases and tables master-slave rule configuration.
+ *
+ * master slave 规则配置表
  * 
  * @author zhangliang
  * @author panjuan
@@ -35,11 +37,14 @@ import java.util.Collection;
 public class MasterSlaveRule {
     
     private final String name;
-    
+
+    // master 数据源名称
     private final String masterDataSourceName;
-    
+
+    //slave 数据源名称
     private final Collection<String> slaveDataSourceNames;
-    
+
+    //如果从库有多个，负载算法
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
