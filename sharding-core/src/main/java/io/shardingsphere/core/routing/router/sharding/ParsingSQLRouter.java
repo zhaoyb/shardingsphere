@@ -110,7 +110,10 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (null != generatedKey) {
             setGeneratedKeys(result, generatedKey);
         }
+
+        // sql 路由  返回目标表
         RoutingResult routingResult = route(sqlStatement, shardingConditions);
+
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {

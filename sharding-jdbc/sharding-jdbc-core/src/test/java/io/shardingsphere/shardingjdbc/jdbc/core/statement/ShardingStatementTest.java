@@ -39,6 +39,7 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
         try (
                 Connection connection = getShardingDataSource().getConnection();
                 Statement stmt = connection.createStatement()) {
+            System.out.println("#############################################################");
             assertFalse(stmt.execute(String.format(sql, 1, 1, "init")));
             assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.NO_GENERATED_KEYS));
             assertFalse(stmt.execute(String.format(sql, 1, 1, "init"), Statement.RETURN_GENERATED_KEYS));

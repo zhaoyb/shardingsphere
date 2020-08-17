@@ -43,6 +43,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 标准路由引擎
+ *
  * Standard routing engine.
  * 
  * @author zhangliang
@@ -60,6 +62,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
    
     @Override
     public RoutingResult route() {
+        // 根据逻辑表，获取该逻辑表对应的所有路由规则
         TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
         Collection<DataNode> dataNodes = new LinkedList<>();
         if (isRoutingByHint(tableRule)) {
@@ -104,12 +107,19 @@ public final class StandardRoutingEngine implements RoutingEngine {
             ShardingStrategy dataBaseShardingStrategy = shardingRule.getDatabaseShardingStrategy(tableRule);
             ShardingStrategy tableShardingStrategy = shardingRule.getTableShardingStrategy(tableRule);
             for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+                // 数据库分片
                 List<ShardingValue> databaseShardingValues = isGettingShardingValuesFromHint(dataBaseShardingStrategy)
-                        ? getDatabaseShardingValuesFromHint() : getShardingValues(dataBaseShardingStrategy.getShardingColumns(), each);
+                        ? getDatabaseShardingValuesFromHint()
+                        : getShardingValues(dataBaseShardingStrategy.getShardingColumns(), each);
+                // 表分片
                 List<ShardingValue> tableShardingValues = isGettingShardingValuesFromHint(tableShardingStrategy)
-                        ? getTableShardingValuesFromHint() : getShardingValues(tableShardingStrategy.getShardingColumns(), each);
+                        ? getTableShardingValuesFromHint()
+                        : getShardingValues(tableShardingStrategy.getShardingColumns(), each);
+
                 Collection<DataNode> dataNodes = route(tableRule, databaseShardingValues, tableShardingValues);
+
                 reviseShardingConditions(each, dataNodes);
+
                 result.addAll(dataNodes);
             }
         }
@@ -159,9 +169,12 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource, final List<ShardingValue> tableShardingValues) {
+        //所有可供路由的表
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
-        Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty() ? availableTargetTables
-                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues));
+        // 最终被路由的表
+        Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty()
+                                                                      ? availableTargetTables
+                                                                      : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues));
         Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {

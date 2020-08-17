@@ -25,13 +25,15 @@ package io.shardingsphere.core.constant;
 public enum SQLType {
     
     /**
+     * 查询语句
      * Data Query Language.
-     * 
+     *
      * <p>Such as {@code SELECT}.</p>
      */
     DQL,
     
     /**
+     * 增删改语句
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
@@ -39,6 +41,7 @@ public enum SQLType {
     DML,
     
     /**
+     * 数据定于语句
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
@@ -46,6 +49,7 @@ public enum SQLType {
     DDL,
     
     /**
+     * 事物控制语句
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>

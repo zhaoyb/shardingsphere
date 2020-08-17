@@ -22,6 +22,9 @@ import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import java.util.Collection;
 
 /**
+ *
+ * 路由规则
+ *
  * Sharding strategy.
  * 
  * @author zhangliang

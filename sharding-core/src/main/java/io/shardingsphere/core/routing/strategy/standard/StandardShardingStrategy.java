@@ -26,7 +26,6 @@ import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorith
 import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,17 +34,17 @@ import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
- * 
+ *
  * @author zhangliang
  */
 public final class StandardShardingStrategy implements ShardingStrategy {
-    
+
     private final String shardingColumn;
-    
+
     private final PreciseShardingAlgorithm preciseShardingAlgorithm;
-    
+
     private final RangeShardingAlgorithm rangeShardingAlgorithm;
-    
+
     public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
         Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
         Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseShardingAlgorithm(), "precise sharding algorithm cannot be null.");
@@ -53,17 +52,18 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         preciseShardingAlgorithm = standardShardingStrategyConfig.getPreciseShardingAlgorithm();
         rangeShardingAlgorithm = standardShardingStrategyConfig.getRangeShardingAlgorithm();
     }
-    
+
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListShardingValue
-                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
+                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue)
+                : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<?> shardingValue) {
         if (null == rangeShardingAlgorithm) {
@@ -71,11 +71,12 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         }
         return rangeShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
+            // 获取真实的目标表
             String target = preciseShardingAlgorithm.doSharding(availableTargetNames, each);
             if (null != target) {
                 result.add(target);
@@ -83,7 +84,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<PreciseShardingValue> transferToPreciseShardingValues(final ListShardingValue<?> shardingValue) {
         List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
@@ -92,7 +93,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         }
         return result;
     }
-    
+
     @Override
     public Collection<String> getShardingColumns() {
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);

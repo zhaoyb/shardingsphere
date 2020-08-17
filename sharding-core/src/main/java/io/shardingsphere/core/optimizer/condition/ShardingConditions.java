@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
+ *
+ * 分片条件
  * Sharding conditions.
  *
  * @author zhangliang

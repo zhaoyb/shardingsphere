@@ -40,8 +40,12 @@ public final class StatementRoutingEngine {
     
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
-    public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData,
-                                  final DatabaseType databaseType, final boolean showSQL, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public StatementRoutingEngine(final ShardingRule shardingRule,
+                                  final ShardingTableMetaData shardingTableMetaData,
+                                  final DatabaseType databaseType,
+                                  final boolean showSQL,
+                                  final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+
         shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingTableMetaData, databaseType, showSQL, shardingDataSourceMetaData);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
@@ -53,7 +57,9 @@ public final class StatementRoutingEngine {
      * @return route result
      */
     public SQLRouteResult route(final String logicSQL) {
+        // sql 解析
         SQLStatement sqlStatement = shardingRouter.parse(logicSQL, false);
+        // 先sharding route , 再主从 route
         return masterSlaveRouter.route(shardingRouter.route(logicSQL, Collections.emptyList(), sqlStatement));
     }
 }
